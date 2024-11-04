@@ -1,7 +1,21 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
+/**
+ * @license
+ * Copyright 2020 Dynatrace LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package dynatraceprocessor // import "github.com/open-telemetry/opentelemetry-collector-contrib/processor/dynatraceprocessor"
+package dynatraceprocessor
 
 import (
 	"context"
@@ -24,10 +38,10 @@ func (rp *dynatraceProcessor) processTraces(ctx context.Context, td ptrace.Trace
 	rss := td.ResourceSpans()
 	for i := 0; i < rss.Len(); i++ {
 		attrs := rss.At(i).Resource().Attributes()
-		if _, found := attrs.Get(string(metaDataKeyDTEntityHost)); found {
+		if _, found := attrs.Get(string(MetaDataKeyDTEntityHost)); found {
 			continue
 		}
-		attrs.PutStr(string(metaDataKeyDTEntityHost), rp.hostID)
+		attrs.PutStr(string(MetaDataKeyDTEntityHost), rp.hostID)
 	}
 	return td, nil
 }
@@ -39,10 +53,10 @@ func (rp *dynatraceProcessor) processMetrics(ctx context.Context, md pmetric.Met
 	rms := md.ResourceMetrics()
 	for i := 0; i < rms.Len(); i++ {
 		attrs := rms.At(i).Resource().Attributes()
-		if _, found := attrs.Get(string(metaDataKeyDTEntityHost)); found {
+		if _, found := attrs.Get(string(MetaDataKeyDTEntityHost)); found {
 			continue
 		}
-		attrs.PutStr(string(metaDataKeyDTEntityHost), rp.hostID)
+		attrs.PutStr(string(MetaDataKeyDTEntityHost), rp.hostID)
 	}
 	return md, nil
 }
@@ -54,10 +68,10 @@ func (rp *dynatraceProcessor) processLogs(ctx context.Context, ld plog.Logs) (pl
 	rls := ld.ResourceLogs()
 	for i := 0; i < rls.Len(); i++ {
 		attrs := rls.At(i).Resource().Attributes()
-		if _, found := attrs.Get(string(metaDataKeyDTEntityHost)); found {
+		if _, found := attrs.Get(string(MetaDataKeyDTEntityHost)); found {
 			continue
 		}
-		attrs.PutStr(string(metaDataKeyDTEntityHost), rp.hostID)
+		attrs.PutStr(string(MetaDataKeyDTEntityHost), rp.hostID)
 	}
 	return ld, nil
 }

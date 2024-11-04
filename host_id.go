@@ -1,7 +1,21 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
+/**
+ * @license
+ * Copyright 2020 Dynatrace LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package dynatraceprocessor // import "github.com/open-telemetry/opentelemetry-collector-contrib/processor/dynatraceprocessor"
+package dynatraceprocessor
 
 import (
 	"bufio"
@@ -16,18 +30,19 @@ var reHostID = regexp.MustCompile(`^HOST-[a-fA-F0-9]+$`)
 
 type CtxKey string
 
-const metaDataKeyDTEntityHost = CtxKey("dt.entity.host")
-const ctxKeyMetaDataPropertiesFilePaths = CtxKey("MetaDataPropertiesFilePaths")
-const ctxKeyRuxitHostIDFilePaths = CtxKey("RuxitHostIDFilePaths")
+const KeyEntityHost = "dt.entity.host"
+const MetaDataKeyDTEntityHost = CtxKey(KeyEntityHost)
+const CtxKeyMetaDataPropertiesFilePaths = CtxKey("MetaDataPropertiesFilePaths")
+const CtxKeyRuxitHostIDFilePaths = CtxKey("RuxitHostIDFilePaths")
 
-var evaluatedHostID = evalHostID(context.Background())
+var evaluatedHostID = EvalHostID(context.Background())
 
 // GetHostID attempts to evaluate the HostID based on
 // a selected few configuration files on the current host
 // If none of these files contains valid content or none of these
 // files exists an empty string is getting returned
 func GetHostID(ctx context.Context) string {
-	if value := ctx.Value(metaDataKeyDTEntityHost); value != nil {
+	if value := ctx.Value(MetaDataKeyDTEntityHost); value != nil {
 		if stringValue, ok := value.(string); ok {
 			return stringValue
 		}
@@ -35,14 +50,14 @@ func GetHostID(ctx context.Context) string {
 	return evaluatedHostID
 }
 
-// evalHostID attempts to evaluate the HostID based on
+// EvalHostID attempts to evaluate the HostID based on
 // a selected few configuration files on the current host
 // If none of these files contains valid content or none of these
 // files exists an empty string is getting returned
 // If the evaluated doesn't match the format of a valid
 // Host ID as expected by Dynatrace, an empty string is
 // getting returned
-func evalHostID(ctx context.Context) string {
+func EvalHostID(ctx context.Context) string {
 	hostID := evalHostIDValue(ctx)
 	if reHostID.MatchString(hostID) {
 		return hostID
@@ -65,7 +80,7 @@ func evalHostIDValue(ctx context.Context) string {
 	metaDataPropertiesFilePaths := defaultMetaDataPropertiesFilePaths
 	// productive file paths will be unavailable during unit tests
 	// context contains temporary files in that case
-	if value := ctx.Value(ctxKeyMetaDataPropertiesFilePaths); value != nil {
+	if value := ctx.Value(CtxKeyMetaDataPropertiesFilePaths); value != nil {
 		if values, ok := value.([]string); ok {
 			metaDataPropertiesFilePaths = values
 		}
@@ -85,7 +100,7 @@ func evalHostIDValue(ctx context.Context) string {
 	ruxitHostIDFilePaths := defaultRuxitHostIDFilePaths
 	// productive file paths will be unavailable during unit tests
 	// context contains temporary files in that case
-	if value := ctx.Value(ctxKeyRuxitHostIDFilePaths); value != nil {
+	if value := ctx.Value(CtxKeyRuxitHostIDFilePaths); value != nil {
 		if values, ok := value.([]string); ok {
 			ruxitHostIDFilePaths = values
 		}
@@ -133,7 +148,7 @@ func evalHostIDFromProperties(filePath string) (string, error) {
 			continue
 		}
 		key := strings.TrimSpace(parts[0])
-		if key == string(metaDataKeyDTEntityHost) {
+		if key == string(MetaDataKeyDTEntityHost) {
 			return strings.TrimSpace(parts[1]), nil
 		}
 	}
