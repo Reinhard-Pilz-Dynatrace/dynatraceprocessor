@@ -35,7 +35,10 @@ func createTracesProcessor(
 	set processor.Settings,
 	cfg component.Config,
 	nextConsumer consumer.Traces) (processor.Traces, error) {
-	hostID := GetHostID(ctx)
+	hostID := ""
+	if cfg.(*Config).Metadata {
+		hostID = GetHostID(ctx)
+	}
 	proc := &dynatraceProcessor{logger: set.Logger, hostID: hostID}
 	return processorhelper.NewTraces(
 		ctx,
@@ -51,7 +54,10 @@ func createMetricsProcessor(
 	set processor.Settings,
 	cfg component.Config,
 	nextConsumer consumer.Metrics) (processor.Metrics, error) {
-	hostID := GetHostID(ctx)
+	hostID := ""
+	if cfg.(*Config).Metadata {
+		hostID = GetHostID(ctx)
+	}
 	proc := &dynatraceProcessor{logger: set.Logger, hostID: hostID}
 	return processorhelper.NewMetrics(
 		ctx,
@@ -67,7 +73,10 @@ func createLogsProcessor(
 	set processor.Settings,
 	cfg component.Config,
 	nextConsumer consumer.Logs) (processor.Logs, error) {
-	hostID := GetHostID(ctx)
+	hostID := ""
+	if cfg.(*Config).Metadata {
+		hostID = GetHostID(ctx)
+	}
 	proc := &dynatraceProcessor{logger: set.Logger, hostID: hostID}
 	return processorhelper.NewLogs(
 		ctx,
