@@ -1,0 +1,3 @@
+# The following specifies a configuration that adds the resource attribute `dt.entity.host` to signals:
+dynatrace:
+  metadata: true
